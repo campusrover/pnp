@@ -1,0 +1,75 @@
+{
+    "stations": [
+        {
+            "fid_id": 1,
+            "station_id": "station_0",
+            "task_id": "wash",
+            "free": false
+        },
+        {
+            "fid_id": 2,
+            "station_id": "station_1",
+            "task_id": "weld",
+            "free": false
+        },
+        {
+            "fid_id": 3,
+            "station_id": "station_2",
+            "task_id": "paint",
+            "free": false
+        },
+        {
+            "fid_id": 4,
+            "station_id": "station_3",
+            "task_id": "wash",
+            "free": false
+        }
+    ],
+    "tasks": [
+        {
+            "id": "wash",
+            "duration": 3
+        },
+        {
+            "id": "weld",
+            "duration": 2
+        },
+        {
+            "id": "paint",
+            "duration": 1
+        }
+    ],
+    "cargoTypes": [
+        {
+            "id": "raw_parts",
+            "tasks": ["wash", "weld", "paint"]     
+        },
+        {
+            "id": "washed_parts",
+            "tasks": ["weld", "paint"]
+        }
+    ],
+    "cargoes": [
+        {
+            "fid_id": 10,
+            "cargo_id": "cargo_0",
+            "type": "raw_parts",
+            "cur_task_idx": 0,
+            "last_placed": 0.0
+        },
+        {
+            "fid_id": 11,
+            "cargo_id": "cargo_1",
+            "type": "raw_parts",
+            "cur_task_idx": 0,
+            "last_placed": 0.0
+        },
+        {
+            "fid_id": 12,
+            "cargo_id": "cargo_2",
+            "type": "washed_parts",
+            "cur_task_idx": 0,
+            "last_placed": 0.0
+        }
+    ]
+}

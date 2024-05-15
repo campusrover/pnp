@@ -1,0 +1,22 @@
+<launch>  
+    <include file="$(find aruco_detect)/launch/aruco_detect.launch">
+        <param name="publish_images" value="true" />
+        <arg name="do_pose_estimation" value="true" />
+        <arg name="vis_msgs" value="true" />
+        <arg name="fiducial_len" value="0.024" />
+        <arg name="fiducial_len_override" value="0: 0.035" />
+        <arg name="dictionary" value="0" />
+        <arg name="camera" value="usb_cam" />
+        <arg name="image" value="image_raw" />
+    </include>
+
+    <include file="$(find usb_cam)/launch/usb_cam-test.launch" />
+    
+    <node name="fixed_marker_frame_broadcaster" pkg="pnp" type="fixed_marker_frame_broadcaster.py" output="screen"/>
+
+    <node name="camera_frame_broadcaster" pkg="pnp" type="camera_frame_broadcaster.py" output="screen" />
+    <node name="cargo_frame_broadcaster" pkg="pnp" type="cargo_frame_broadcaster.py" output="screen" />
+    <node name="workstation_frame_broadcaster" pkg="pnp" type="workstation_frame_broadcaster.py" output="screen" />
+
+    <node name="pnp_controller" pkg="pnp" type="pnp_controller.py" output="screen"/>
+</launch>
