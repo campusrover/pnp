@@ -1,26 +1,26 @@
 {
     "stations": [
         {
+            "id": "station_0",
             "fid_id": 1,
-            "station_id": "station_0",
             "task_id": "wash",
             "free": false
         },
         {
+            "id": "station_1",
             "fid_id": 2,
-            "station_id": "station_1",
             "task_id": "weld",
             "free": false
         },
         {
+            "id": "station_2",
             "fid_id": 3,
-            "station_id": "station_2",
             "task_id": "paint",
             "free": false
         },
         {
+            "id": "station_3",
             "fid_id": 4,
-            "station_id": "station_3",
             "task_id": "wash",
             "free": false
         }
@@ -51,25 +51,28 @@
     ],
     "cargoes": [
         {
+            "id": "cargo_0",
             "fid_id": 10,
-            "cargo_id": "cargo_0",
             "type": "raw_parts",
-            "cur_task_idx": 0,
-            "last_placed": 0.0
+            "cur_task_idx": -1,
+            "last_station": "None",
+            "last_placed": "Never"
         },
         {
+            "id": "cargo_1",
             "fid_id": 11,
-            "cargo_id": "cargo_1",
             "type": "raw_parts",
-            "cur_task_idx": 0,
-            "last_placed": 0.0
+            "cur_task_idx": -1,
+            "last_station": "None",
+            "last_placed": "Never"
         },
         {
+            "id": "cargo_2",
             "fid_id": 12,
-            "cargo_id": "cargo_2",
             "type": "washed_parts",
-            "cur_task_idx": 0,
-            "last_placed": 0.0
+            "cur_task_idx": -1,
+            "last_station": "None",
+            "last_placed": "Never" 
         }
     ]
 }

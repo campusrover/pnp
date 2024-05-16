@@ -35,7 +35,7 @@ class WorkstationFrameBroadcaster:
             try:
                 new_wsf = TransformStamped()
                 parent_fid = f'fiducial_{station["fid_id"]}'                  
-                cf_id = station['station_id']
+                cf_id = station['id']
 
                 self._set_new_ws_header_and_child_frame_id(new_wsf,
                         cf_id,

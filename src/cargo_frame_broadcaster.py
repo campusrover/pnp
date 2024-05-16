@@ -51,7 +51,7 @@ class CargoFrameBroadcaster:
             try:
                 new_cf = TransformStamped()
                 parent_fid = f'fiducial_{cargo["fid_id"]}'
-                cf_id = cargo['cargo_id']
+                cf_id = cargo['id']
 
                 self._set_new_cf_header_and_child_frame_id(
                         new_cf,
