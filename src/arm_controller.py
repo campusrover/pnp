@@ -65,9 +65,9 @@ class ArmController:
         return tf_base_to_pickup.translation.z, dist, yaw
 
     def _pick(self, height, dist, yaw, moving_time=1.25):
+        self._open_gripper()
         self._move_robot_waist(yaw, moving_time)
         self._move_robot_limbs(dist, height, moving_time)
-        self._open_gripper()
         self._close_gripper()
 
     def _get_place_args(self, ws_frame_name):

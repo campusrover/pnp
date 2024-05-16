@@ -50,37 +50,46 @@ class PnpController:
             res[station['task_id']].append(station)
         return res
 
-    def _is_ready(self, cargo, cur_task):
+    def _is_ready_for_pnp(self, cargo, cur_task_id):
+        cur_task = self.tasks_map[cur_task_id]
         if cargo['last_placed'] == "Never":
-            return true
-        ready_time = cargo['last_placed'] + cur_task['duration']
+            return True
+        ready_time = (cargo['last_placed']
+                + rospy.Duration.from_sec(cur_task['duration']))
         if rospy.Time.now() > ready_time:
-            return true
+            return True
         else:
-            return false
+            return False
 
-    def _next_station_id(self, next_task):
-        stations = self.tasks_to_stations[next_task]
+    def _next_station_id(self, next_task_id):
+        stations = self.tasks_to_stations[next_task_id]
         for station in stations:
             if station['free']:
                 return station['id']
         return None
 
-    def _pnp_cargo(self, cargo_id, station_id):
-        cargo['cur_task_idx'] += 1
-        self._pick_and_place(cargo_id, station_id)
+    def _pnp_cargo(self, cargo, station_id):
+        self._pick_and_place(cargo['id'], station_id)
         cargo['last_placed'] = rospy.Time.now()
-        cargo['last_station'] = station_id
-        self.station_map[station_id]['free'] = false
+        if station_id != 'drop_off_zone':
+            cargo['cur_task_idx'] += 1
+            self.station_map[station_id]['free'] = False
         if cargo['cur_task_idx'] != 0:
-            self.station_map[cargo['last_station']]['free'] = true
+            self.station_map[cargo['last_station']]['free'] = True
+        cargo['last_station'] = station_id
 
-    def _pnp_dropoff(self, cargo_id):
-        self._pick_and_place(cargo_id, 'drop_off_zone')
+    def _pnp_dropoff(self, cargo):
+        self._pnp_cargo(cargo, 'drop_off_zone')
 
     def _pick_and_place(self, cargo_id, station_id):
         self.arm_ctrl.pick_up(cargo_id)
         self.arm_ctrl.place_at(station_id) 
+
+    def _last_task_not_done(self, cur_task_idx, tasks):
+        return cur_task_idx < len(tasks) - 1
+
+    def _not_done(self, cargo_id):
+        return cargo_id not in self.done_cargoes
 
     def run(self):
         rate = rospy.Rate(10.0)
@@ -90,17 +99,17 @@ class PnpController:
                     cargo = self.cargo_map[cargo_id]
                     cur_task_idx = cargo['cur_task_idx']
                     tasks = self.ctype_map[cargo['type']]['tasks']
-                    cur_task = tasks[cur_task_idx]
+                    cur_task_id = tasks[cur_task_idx]
 
-                    if (cargo['id'] not in self.done_cargoes and 
-                            self._is_ready(cargo, cur_task)):
-                        if cur_task_idx < len(tasks) - 1:
-                            next_task = tasks[cur_task_idx + 1]
-                            station_id = self._next_station_id(next_task)
+                    if (self._not_done(cargo_id)
+                            and self._is_ready_for_pnp(cargo, cur_task_id)):
+                        if self._last_task_not_done(cur_task_idx, tasks):
+                            next_task_id = tasks[cur_task_idx + 1]
+                            station_id = self._next_station_id(next_task_id)
                             if station_id is not None:
-                                self._pnp_cargo(cargo_id, station_id)
+                                self._pnp_cargo(cargo, station_id)
                         else: 
-                            self._pnp_dropoff(cargo_id)
+                            self._pnp_dropoff(cargo)
                             self.done_cargoes.add(cargo_id)
 
 if __name__ == '__main__':

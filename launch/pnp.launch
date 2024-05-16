@@ -19,5 +19,5 @@
     <node name="workstation_frame_broadcaster" pkg="pnp" type="workstation_frame_broadcaster.py" output="screen" />
     <node name="dz_frame_broadcaster" pkg="pnp" type="dz_frame_broadcaster.py" output="screen" />
 
-    <!-- <node name="pnp_controller" pkg="pnp" type="pnp_controller.py" output="screen"/> -->
+    <node name="pnp_controller" pkg="pnp" type="pnp_controller.py" output="screen"/>
 </launch>

@@ -4,25 +4,19 @@
             "id": "station_0",
             "fid_id": 1,
             "task_id": "wash",
-            "free": false
+            "free": true 
         },
         {
             "id": "station_1",
             "fid_id": 2,
             "task_id": "weld",
-            "free": false
+            "free": true 
         },
         {
             "id": "station_2",
             "fid_id": 3,
-            "task_id": "paint",
-            "free": false
-        },
-        {
-            "id": "station_3",
-            "fid_id": 4,
             "task_id": "wash",
-            "free": false
+            "free": true 
         }
     ],
     "tasks": [
@@ -33,20 +27,16 @@
         {
             "id": "weld",
             "duration": 2
-        },
-        {
-            "id": "paint",
-            "duration": 1
         }
     ],
     "cargoTypes": [
         {
             "id": "raw_parts",
-            "tasks": ["wash", "weld", "paint"]     
+            "tasks": ["wash", "weld", "wash"]     
         },
         {
             "id": "washed_parts",
-            "tasks": ["weld", "paint"]
+            "tasks": ["weld", "wash"]
         }
     ],
     "cargoes": [
