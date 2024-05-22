@@ -17,13 +17,7 @@ class FixedMarkerFrameBroadcaster:
             ts.header.frame_id = "world"
             ts.header.stamp = rospy.Time.now()
             ts.child_frame_id = "fixed_marker"
-            ts.transform.translation.x = 0.0
             ts.transform.translation.y = -0.105
-            ts.transform.translation.z = 0.0
-
-            ts.transform.rotation.x = 0.0
-            ts.transform.rotation.y = 0.0
-            ts.transform.rotation.z = 0.0
             ts.transform.rotation.w = 1.0
 
             tfm = TFMessage([ts])

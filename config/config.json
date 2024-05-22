@@ -64,5 +64,6 @@
             "last_station": "None",
             "last_placed": "Never" 
         }
-    ]
+    ],
+    "drop_off_zone_fiducial": "fiducial_5"
 }

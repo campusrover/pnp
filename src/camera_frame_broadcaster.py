@@ -19,11 +19,11 @@ class CameraFrameBroadcaster:
 
         while not rospy.is_shutdown():
             try:
-                tf_fixed_to_cam = self.tf_buffer.lookup_transform('fiducial_0', 'usb_cam', rospy.Time()).transform
+                tf_fixed_to_cam = self.tf_buffer.lookup_transform('fiducial_0',
+                        'usb_cam',
+                        rospy.Time()).transform
                 new_tfs.header.stamp = rospy.Time.now()
                 new_tfs.transform.translation = tf_fixed_to_cam.translation
-                # new_tfs.transform.translation.x += 0.0035
-                # new_tfs.transform.translation.y += 0.011
                 new_tfs.transform.rotation = tf_fixed_to_cam.rotation
 
                 self.tf_broadcaster.sendTransform(new_tfs)

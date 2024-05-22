@@ -15,9 +15,8 @@
     <node name="fixed_marker_frame_broadcaster" pkg="pnp" type="fixed_marker_frame_broadcaster.py" output="screen"/>
 
     <node name="camera_frame_broadcaster" pkg="pnp" type="camera_frame_broadcaster.py" output="screen" />
-    <node name="cargo_frame_broadcaster" pkg="pnp" type="cargo_frame_broadcaster.py" output="screen" />
-    <node name="workstation_frame_broadcaster" pkg="pnp" type="workstation_frame_broadcaster.py" output="screen" />
-    <node name="dz_frame_broadcaster" pkg="pnp" type="dz_frame_broadcaster.py" output="screen" />
+
+    <node name="pnp_frame_broadcaster" pkg="pnp" type="pnp_frame_broadcaster.py" output="screen" />
 
     <node name="pnp_controller" pkg="pnp" type="pnp_controller.py" output="screen"/>
 </launch>

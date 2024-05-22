@@ -25,6 +25,27 @@ class PnpController:
         self.seen_cargoes_lock = Lock()
         self.done_cargoes = set()
 
+    def run(self):
+        rate = rospy.Rate(10.0)
+        while not rospy.is_shutdown():
+            with self.seen_cargoes_lock:
+                for cargo_id in self.seen_cargoes:
+                    cargo = self.cargo_map[cargo_id]
+                    cur_task_idx = cargo['cur_task_idx']
+                    tasks = self.ctype_map[cargo['type']]['tasks']
+                    cur_task_id = tasks[cur_task_idx]
+
+                    if (self._not_done(cargo_id)
+                            and self._is_ready_for_pnp(cargo, cur_task_id)):
+                        if self._last_task_not_done(cur_task_idx, tasks):
+                            next_task_id = tasks[cur_task_idx + 1]
+                            station_id = self._next_station_id(next_task_id)
+                            if station_id is not None:
+                                self._pnp_cargo(cargo, station_id)
+                        else: 
+                            self._pnp_dropoff(cargo)
+                            self.done_cargoes.add(cargo_id)
+
     def _seen_cargoes_handler(self, data):
         with self.seen_cargoes_lock:
             self.seen_cargoes.add(data.data)
@@ -90,27 +111,6 @@ class PnpController:
 
     def _not_done(self, cargo_id):
         return cargo_id not in self.done_cargoes
-
-    def run(self):
-        rate = rospy.Rate(10.0)
-        while not rospy.is_shutdown():
-            with self.seen_cargoes_lock:
-                for cargo_id in self.seen_cargoes:
-                    cargo = self.cargo_map[cargo_id]
-                    cur_task_idx = cargo['cur_task_idx']
-                    tasks = self.ctype_map[cargo['type']]['tasks']
-                    cur_task_id = tasks[cur_task_idx]
-
-                    if (self._not_done(cargo_id)
-                            and self._is_ready_for_pnp(cargo, cur_task_id)):
-                        if self._last_task_not_done(cur_task_idx, tasks):
-                            next_task_id = tasks[cur_task_idx + 1]
-                            station_id = self._next_station_id(next_task_id)
-                            if station_id is not None:
-                                self._pnp_cargo(cargo, station_id)
-                        else: 
-                            self._pnp_dropoff(cargo)
-                            self.done_cargoes.add(cargo_id)
 
 if __name__ == '__main__':
     rospy.init_node('pnp_controller')

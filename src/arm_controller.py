@@ -21,39 +21,30 @@ class ArmController:
         self.PLACE_HEIGHT_OFFSET = 0.045
         self.DEBUG = True
 
-    def init_arm_pose(self, moving_time=1.25):
-        self.arm_client.brl_go_to_sleep_pose(moving_time=moving_time)
-        self.arm_client.brl_set_ee_pose_components(
-                x=self.INIT_DIST,
-                z=self.INIT_HEIGHT,
-                moving_time=moving_time)
-
-    def retire_robot(self, moving_time=1.25):
-        rospy.loginfo('======================================')
-        rospy.loginfo(f'Going to sleep pose')
-        rospy.loginfo('======================================')
-        self.arm_client.brl_go_to_sleep_pose(moving_time=moving_time)
-        rospy.loginfo('======================================')
-        rospy.loginfo(f'Went to sleep pose')
-        rospy.loginfo('======================================')
-
-    def pick_up(self, cargo_frame_name, moving_time=1.25):
+    def pick_up(self, cargo_frame_name):
         rospy.loginfo('**************************************')
         rospy.loginfo(f'Picking up: {cargo_frame_name}')
         rospy.loginfo('**************************************')
-        self.init_arm_pose(moving_time)
+        self._init_arm_pose()
         (height, dist, yaw) = self._get_pick_args(cargo_frame_name)
-        self._pick(height, dist, yaw, moving_time)
-        self.arm_client.brl_go_to_sleep_pose(moving_time=moving_time)
+        self._pick(height, dist, yaw)
+        self.arm_client.brl_go_to_sleep_pose(moving_time=1.25)
 
-    def place_at(self, ws_frame_name, moving_time=1.25):
+    def place_at(self, station_frame_name):
         rospy.loginfo('**************************************')
-        rospy.loginfo(f'Placing cargo at {ws_frame_name}')
+        rospy.loginfo(f'Placing cargo at {station_frame_name}')
         rospy.loginfo('**************************************')
-        self.init_arm_pose(moving_time)
-        (height, dist, yaw) = self._get_place_args(ws_frame_name)
-        self._place(height, dist, yaw, moving_time)
-        self.arm_client.brl_go_to_sleep_pose(moving_time=moving_time)
+        self._init_arm_pose()
+        (height, dist, yaw) = self._get_place_args(station_frame_name)
+        self._place(height, dist, yaw)
+        self.arm_client.brl_set_ee_cartesian_trajectory(z=0.05, moving_time=0.5)
+        self.arm_client.brl_go_to_sleep_pose()
+
+    def _init_arm_pose(self):
+        self.arm_client.brl_go_to_sleep_pose()
+        self.arm_client.brl_set_ee_pose_components(
+                x=self.INIT_DIST,
+                z=self.INIT_HEIGHT)
 
     def _get_pick_args(self, cargo_frame_name):
         tf_base_to_pickup = self.tf_buffer.lookup_transform(
@@ -64,26 +55,25 @@ class ArmController:
         yaw = self._get_yaw(tf_base_to_pickup.translation.y, dist)
         return tf_base_to_pickup.translation.z, dist, yaw
 
-    def _pick(self, height, dist, yaw, moving_time=1.25):
+    def _pick(self, height, dist, yaw):
         self._open_gripper()
-        self._move_robot_waist(yaw, moving_time)
-        self._move_robot_limbs(dist, height, moving_time)
+        self._move_robot_waist(yaw)
+        self._move_robot_limbs(dist, height)
         self._close_gripper()
 
-    def _get_place_args(self, ws_frame_name):
+    def _get_place_args(self, station_frame_name):
         tf_base_to_place = self.tf_buffer.lookup_transform(
                 'px100/base_link',
-                ws_frame_name,
+                station_frame_name,
                 rospy.Time()).transform
         dist = self._get_dist_base_orig_to_dest_orig(tf_base_to_place)
         yaw = self._get_yaw(tf_base_to_place.translation.y, dist)
         return tf_base_to_place.translation.z, dist, yaw
 
-    def _place(self, height, dist, yaw, moving_time=1.25):
-        self._move_robot_waist(yaw, moving_time)
+    def _place(self, height, dist, yaw):
+        self._move_robot_waist(yaw)
         self._move_robot_limbs(dist,
-                height + self.PLACE_HEIGHT_OFFSET,
-                moving_time)
+                height + self.PLACE_HEIGHT_OFFSET)
         self._open_gripper()
     
     def _get_dist_base_orig_to_dest_orig(self, tf_base_to_dest):
@@ -105,31 +95,16 @@ class ArmController:
             rospy.loginfo(f'Yaw: {yaw}')
         return yaw
 
-    def _move_robot_waist(self, yaw, moving_time=1.25):
-        rospy.loginfo('======================================')
-        rospy.loginfo(f'Moving robot waist by: {yaw} radians')
-        rospy.loginfo('======================================')
+    def _move_robot_waist(self, yaw):
         self.arm_client.brl_set_single_joint_position('waist',
-                yaw,
-                moving_time=moving_time)
-        rospy.loginfo('======================================')
-        rospy.loginfo(f'Moved robot waist.')
-        rospy.loginfo('======================================')
+                yaw)
 
     def _move_robot_limbs(self,
             x_from_base,
-            z_from_base,
-            moving_time=1.25):
-        rospy.loginfo('======================================')
-        rospy.loginfo(f'Moving robot limbs by ({x_from_base - self.INIT_DIST, z_from_base - self.INIT_HEIGHT}) offset from robot\'s base_frame')
-        rospy.loginfo('======================================')
+            z_from_base):
         self.arm_client.brl_set_ee_cartesian_trajectory(
                 x=x_from_base - self.INIT_DIST,
-                z=z_from_base - self.INIT_HEIGHT,
-                moving_time=moving_time)
-        rospy.loginfo('======================================')
-        rospy.loginfo(f'Moved robot\'s limbs.')
-        rospy.loginfo('======================================')
+                z=z_from_base - self.INIT_HEIGHT)
 
     def _open_gripper(self):
         self.arm_client.brl_open_gripper()
