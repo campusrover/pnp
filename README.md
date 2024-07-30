@@ -7,11 +7,26 @@ manufacturing process.
 ---
 ## Table of Contents
 - [Video](#video)
+- [How to Run](#how-to-run)
 - [What](#what)
 - [Why](#why)
 - [How](#how)
 - [Next Steps](#next-steps)
 ---
+
+## How To Run
+
+Execute:
+
+```bash
+roslaunch brl_pxh_api brl_pxh_api.launch
+```
+
+Then in a separate window, execute:
+
+```bash
+roslaunch pnp pnp.launch
+```
 
 ## Video
 [Watch the project in action!](https://drive.google.com/file/d/1KwD7RT69WAX70gCqWBaPEyARUFQieyVz/view?usp=sharing)
